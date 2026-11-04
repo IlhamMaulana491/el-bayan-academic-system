@@ -6,7 +6,7 @@ import { getDb, saveDb, hashPassword, verifyPassword, UserWithHash } from './src
 import { UserAccount, UserRole } from './src/types.ts';
 
 const app = express();
-const PORT = 3000;
+const PORT = Number(process.env.PORT) || 3000;
 
 // Support large payloads for base64 file/logo/banner uploads
 app.use(express.json({ limit: '15mb' }));

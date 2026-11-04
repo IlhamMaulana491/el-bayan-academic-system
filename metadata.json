@@ -1,0 +1,8 @@
+{
+  "name": "E-Learning MA EL-BAYAN",
+  "description": "Sistem Informasi dan Pembelajaran Digital Madrasah Aliyah EL-BAYAN — Madrasah Digital, Generasi Cerdas dan Berakhlak Mulia.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

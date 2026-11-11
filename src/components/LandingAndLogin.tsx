@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { MadrasahLogo } from './IslamicVisuals.tsx';
 import { Announcement, Major, SchoolSettings, Subject, UserRole } from '../types.ts';
+import { apiFetch } from '../utils/api.ts';
 
 interface PublicOverviewProps {
   settings: SchoolSettings;
@@ -60,7 +61,7 @@ export const LandingAndLogin: React.FC<PublicOverviewProps> = ({
     setErrorMsg('');
     setLoading(true);
     try {
-      const res = await fetch('/api/auth/login', {
+      const res = await apiFetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ identifier, password }),
@@ -82,7 +83,7 @@ export const LandingAndLogin: React.FC<PublicOverviewProps> = ({
     setErrorMsg('');
     setLoading(true);
     try {
-      const res = await fetch('/api/auth/quick-login', {
+      const res = await apiFetch('/api/auth/quick-login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ role }),

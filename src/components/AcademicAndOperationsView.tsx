@@ -32,6 +32,7 @@ import {
   UserAccount,
 } from '../types.ts';
 import { MadrasahLogo } from './IslamicVisuals.tsx';
+import { apiFetch } from '../utils/api.ts';
 
 interface AcademicOpsProps {
   mode: 'absensi' | 'nilai' | 'jadwal' | 'forum' | 'pengumuman' | 'laporan' | 'pengaturan';
@@ -97,7 +98,7 @@ export const AcademicAndOperationsView: React.FC<AcademicOpsProps> = ({
       status: statusMap[st.id] || 'Hadir',
       note: noteMap[st.id] || 'Hadir tepat waktu',
     }));
-    const res = await fetch('/api/attendance', {
+    const res = await apiFetch('/api/attendance', {
       method: 'POST',
       headers,
       body: JSON.stringify({
@@ -133,7 +134,7 @@ export const AcademicAndOperationsView: React.FC<AcademicOpsProps> = ({
 
   const handleSaveGrade = async (e: React.FormEvent) => {
     e.preventDefault();
-    const res = await fetch('/api/grades', {
+    const res = await apiFetch('/api/grades', {
       method: 'POST',
       headers,
       body: JSON.stringify(gradeForm),
@@ -163,7 +164,7 @@ export const AcademicAndOperationsView: React.FC<AcademicOpsProps> = ({
 
   const handleSaveSchedule = async (e: React.FormEvent) => {
     e.preventDefault();
-    const res = await fetch('/api/schedules', {
+    const res = await apiFetch('/api/schedules', {
       method: 'POST',
       headers,
       body: JSON.stringify(schForm),
@@ -189,7 +190,7 @@ export const AcademicAndOperationsView: React.FC<AcademicOpsProps> = ({
 
   const handleCreateThread = async (e: React.FormEvent) => {
     e.preventDefault();
-    const res = await fetch('/api/forums', {
+    const res = await apiFetch('/api/forums', {
       method: 'POST',
       headers,
       body: JSON.stringify(threadForm),
@@ -205,7 +206,7 @@ export const AcademicAndOperationsView: React.FC<AcademicOpsProps> = ({
   const handleSendReply = async (threadId: string) => {
     const text = replyInputs[threadId];
     if (!text || !text.trim()) return;
-    const res = await fetch(`/api/forums/${threadId}/reply`, {
+    const res = await apiFetch(`/api/forums/${threadId}/reply`, {
       method: 'POST',
       headers,
       body: JSON.stringify({ content: text }),
@@ -218,7 +219,7 @@ export const AcademicAndOperationsView: React.FC<AcademicOpsProps> = ({
   };
 
   const handleLikeThread = async (threadId: string) => {
-    await fetch(`/api/forums/${threadId}/like`, { method: 'POST', headers });
+    await apiFetch(`/api/forums/${threadId}/like`, { method: 'POST', headers });
     await onRefresh();
   };
 
@@ -236,7 +237,7 @@ export const AcademicAndOperationsView: React.FC<AcademicOpsProps> = ({
 
   const handleSaveAnn = async (e: React.FormEvent) => {
     e.preventDefault();
-    const res = await fetch('/api/announcements', {
+    const res = await apiFetch('/api/announcements', {
       method: 'POST',
       headers,
       body: JSON.stringify(annForm),
@@ -401,7 +402,7 @@ export const AcademicAndOperationsView: React.FC<AcademicOpsProps> = ({
 
   const handleSaveProfile = async (e: React.FormEvent) => {
     e.preventDefault();
-    const res = await fetch('/api/auth/profile', {
+    const res = await apiFetch('/api/auth/profile', {
       method: 'PUT',
       headers,
       body: JSON.stringify(profileForm),
@@ -416,7 +417,7 @@ export const AcademicAndOperationsView: React.FC<AcademicOpsProps> = ({
 
   const handleSaveSchoolSettings = async (e: React.FormEvent) => {
     e.preventDefault();
-    const res = await fetch('/api/settings', {
+    const res = await apiFetch('/api/settings', {
       method: 'PUT',
       headers,
       body: JSON.stringify(schoolForm),
@@ -871,7 +872,7 @@ export const AcademicAndOperationsView: React.FC<AcademicOpsProps> = ({
                       <button
                         type="button"
                         onClick={async () => {
-                          const res = await fetch(`/api/schedules/${s.id}`, { method: 'DELETE', headers });
+                          const res = await apiFetch(`/api/schedules/${s.id}`, { method: 'DELETE', headers });
                           if (res.ok) {
                             await onRefresh();
                             notify('Jadwal pelajaran dihapus.');
@@ -1038,7 +1039,7 @@ export const AcademicAndOperationsView: React.FC<AcademicOpsProps> = ({
                   <button
                     type="button"
                     onClick={async () => {
-                      const res = await fetch(`/api/forums/${th.id}`, { method: 'DELETE', headers });
+                      const res = await apiFetch(`/api/forums/${th.id}`, { method: 'DELETE', headers });
                       if (res.ok) {
                         await onRefresh();
                         notify('Topik diskusi dihapus.');
@@ -1204,7 +1205,7 @@ export const AcademicAndOperationsView: React.FC<AcademicOpsProps> = ({
                 <button
                   type="button"
                   onClick={async () => {
-                    await fetch(`/api/announcements/${ann.id}`, { method: 'DELETE', headers });
+                    await apiFetch(`/api/announcements/${ann.id}`, { method: 'DELETE', headers });
                     await onRefresh();
                     notify('Pengumuman dihapus.');
                   }}

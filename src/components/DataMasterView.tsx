@@ -24,6 +24,7 @@ import {
   UserAccount,
   UserRole,
 } from '../types.ts';
+import { apiFetch } from '../utils/api.ts';
 
 interface DataMasterProps {
   token: string;
@@ -139,7 +140,7 @@ export const DataMasterView: React.FC<DataMasterProps> = ({
     e.preventDefault();
     const url = editingId ? `/api/master/students/${editingId}` : '/api/master/students';
     const method = editingId ? 'PUT' : 'POST';
-    const res = await fetch(url, { method, headers, body: JSON.stringify(studentForm) });
+    const res = await apiFetch(url, { method, headers, body: JSON.stringify(studentForm) });
     if (res.ok) {
       await onRefresh();
       setShowModal(false);
@@ -149,7 +150,7 @@ export const DataMasterView: React.FC<DataMasterProps> = ({
   };
 
   const handleDelete = async (endpoint: string, id: string, label: string) => {
-    const res = await fetch(`/api/master/${endpoint}/${id}`, { method: 'DELETE', headers });
+    const res = await apiFetch(`/api/master/${endpoint}/${id}`, { method: 'DELETE', headers });
     if (res.ok) {
       await onRefresh();
       notify(`${label} berhasil dihapus dari database.`);
@@ -160,7 +161,7 @@ export const DataMasterView: React.FC<DataMasterProps> = ({
     e.preventDefault();
     const url = editingId ? `/api/master/teachers/${editingId}` : '/api/master/teachers';
     const method = editingId ? 'PUT' : 'POST';
-    const res = await fetch(url, { method, headers, body: JSON.stringify(teacherForm) });
+    const res = await apiFetch(url, { method, headers, body: JSON.stringify(teacherForm) });
     if (res.ok) {
       await onRefresh();
       setShowModal(false);
@@ -173,7 +174,7 @@ export const DataMasterView: React.FC<DataMasterProps> = ({
     e.preventDefault();
     const url = editingId ? `/api/master/classes/${editingId}` : '/api/master/classes';
     const method = editingId ? 'PUT' : 'POST';
-    const res = await fetch(url, { method, headers, body: JSON.stringify(classForm) });
+    const res = await apiFetch(url, { method, headers, body: JSON.stringify(classForm) });
     if (res.ok) {
       await onRefresh();
       setShowModal(false);
@@ -186,7 +187,7 @@ export const DataMasterView: React.FC<DataMasterProps> = ({
     e.preventDefault();
     const url = editingId ? `/api/master/majors/${editingId}` : '/api/master/majors';
     const method = editingId ? 'PUT' : 'POST';
-    const res = await fetch(url, { method, headers, body: JSON.stringify(majorForm) });
+    const res = await apiFetch(url, { method, headers, body: JSON.stringify(majorForm) });
     if (res.ok) {
       await onRefresh();
       setShowModal(false);
@@ -199,7 +200,7 @@ export const DataMasterView: React.FC<DataMasterProps> = ({
     e.preventDefault();
     const url = editingId ? `/api/master/subjects/${editingId}` : '/api/master/subjects';
     const method = editingId ? 'PUT' : 'POST';
-    const res = await fetch(url, { method, headers, body: JSON.stringify(subjectForm) });
+    const res = await apiFetch(url, { method, headers, body: JSON.stringify(subjectForm) });
     if (res.ok) {
       await onRefresh();
       setShowModal(false);
@@ -212,7 +213,7 @@ export const DataMasterView: React.FC<DataMasterProps> = ({
     e.preventDefault();
     const url = editingId ? `/api/master/users/${editingId}` : '/api/master/users';
     const method = editingId ? 'PUT' : 'POST';
-    const res = await fetch(url, { method, headers, body: JSON.stringify(userForm) });
+    const res = await apiFetch(url, { method, headers, body: JSON.stringify(userForm) });
     if (res.ok) {
       await onRefresh();
       setShowModal(false);
@@ -227,7 +228,7 @@ export const DataMasterView: React.FC<DataMasterProps> = ({
 
   const handleSaveAy = async (e: React.FormEvent) => {
     e.preventDefault();
-    const res = await fetch('/api/master/academic-years', { method: 'POST', headers, body: JSON.stringify(ayForm) });
+    const res = await apiFetch('/api/master/academic-years', { method: 'POST', headers, body: JSON.stringify(ayForm) });
     if (res.ok) {
       await onRefresh();
       setShowModal(false);
@@ -236,7 +237,7 @@ export const DataMasterView: React.FC<DataMasterProps> = ({
   };
 
   const handleActivateAy = async (id: string) => {
-    const res = await fetch(`/api/master/academic-years/${id}/activate`, { method: 'PUT', headers });
+    const res = await apiFetch(`/api/master/academic-years/${id}/activate`, { method: 'PUT', headers });
     if (res.ok) {
       await onRefresh();
       notify('Tahun ajaran & semester aktif berhasil diperbarui.');

@@ -1,9 +1,10 @@
-import express, { Request, Response, NextFunction } from 'express';
+import express from 'express';
+import type { Request, Response, NextFunction } from 'express';
 import path from 'path';
 import crypto from 'crypto';
 import { createServer as createViteServer } from 'vite';
-import { getDb, saveDb, hashPassword, verifyPassword, UserWithHash } from './src/server/db.ts';
-import { UserAccount, UserRole } from './src/types.ts';
+import { getDb, saveDb, hashPassword, verifyPassword, type UserWithHash } from './src/server/db.ts';
+import type { UserAccount, UserRole } from './src/types.ts';
 
 const app = express();
 const PORT = Number(process.env.PORT) || 3000;
@@ -1203,4 +1204,8 @@ async function startServer() {
   });
 }
 
-startServer();
+if (!process.env.VERCEL) {
+  startServer();
+}
+
+export default app;

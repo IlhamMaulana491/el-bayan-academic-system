@@ -57,6 +57,7 @@ import { LandingAndLogin } from './components/LandingAndLogin.tsx';
 import { DataMasterView } from './components/DataMasterView.tsx';
 import { LearningAndExamView } from './components/LearningAndExamView.tsx';
 import { AcademicAndOperationsView } from './components/AcademicAndOperationsView.tsx';
+import { apiFetch } from './utils/api.ts';
 
 type NavTab =
   | 'dashboard'
@@ -176,8 +177,8 @@ export default function App() {
       if (!tk) return;
       try {
         const [meRes, allRes] = await Promise.all([
-          fetch('/api/auth/me', { headers: { Authorization: `Bearer ${tk}` } }),
-          fetch('/api/state/all', { headers: { Authorization: `Bearer ${tk}` } }),
+          apiFetch('/api/auth/me', { headers: { Authorization: `Bearer ${tk}` } }),
+          apiFetch('/api/state/all', { headers: { Authorization: `Bearer ${tk}` } }),
         ]);
         if (meRes.ok) {
           const meData = await meRes.json();
@@ -218,7 +219,7 @@ export default function App() {
 
   const handleQuickRoleSwitch = async (role: UserRole) => {
     try {
-      const res = await fetch('/api/auth/quick-login', {
+      const res = await apiFetch('/api/auth/quick-login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ role }),
@@ -238,7 +239,7 @@ export default function App() {
   };
 
   const handleMarkNotificationsRead = async () => {
-    const res = await fetch('/api/notifications/read-all', {
+    const res = await apiFetch('/api/notifications/read-all', {
       method: 'POST',
       headers: { Authorization: `Bearer ${token}` },
     });

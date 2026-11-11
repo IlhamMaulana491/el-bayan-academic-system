@@ -23,6 +23,7 @@ import {
   Subject,
   UserAccount,
 } from '../types.ts';
+import { apiFetch } from '../utils/api.ts';
 
 interface LearningAndExamProps {
   mode: 'materi' | 'tugas-ujian';
@@ -165,7 +166,7 @@ export const LearningAndExamView: React.FC<LearningAndExamProps> = ({
 
   // Download Material File
   const handleDownloadMaterial = async (mat: LearningMaterial) => {
-    await fetch(`/api/materials/${mat.id}/download`, { method: 'POST', headers });
+    await apiFetch(`/api/materials/${mat.id}/download`, { method: 'POST', headers });
     if (mat.fileDataUrl) {
       const a = document.createElement('a');
       a.href = mat.fileDataUrl;
@@ -204,7 +205,7 @@ export const LearningAndExamView: React.FC<LearningAndExamProps> = ({
 
   const handleCreateMaterial = async (e: React.FormEvent) => {
     e.preventDefault();
-    const res = await fetch('/api/materials', {
+    const res = await apiFetch('/api/materials', {
       method: 'POST',
       headers,
       body: JSON.stringify(matForm),
@@ -228,7 +229,7 @@ export const LearningAndExamView: React.FC<LearningAndExamProps> = ({
   };
 
   const handleDeleteMaterial = async (id: string) => {
-    const res = await fetch(`/api/materials/${id}`, { method: 'DELETE', headers });
+    const res = await apiFetch(`/api/materials/${id}`, { method: 'DELETE', headers });
     if (res.ok) {
       await onRefresh();
       notify('Materi pembelajaran berhasil dihapus.');
@@ -237,7 +238,7 @@ export const LearningAndExamView: React.FC<LearningAndExamProps> = ({
 
   const handleCreateAssignment = async (e: React.FormEvent) => {
     e.preventDefault();
-    const res = await fetch('/api/assignments', {
+    const res = await apiFetch('/api/assignments', {
       method: 'POST',
       headers,
       body: JSON.stringify(asgForm),
@@ -250,7 +251,7 @@ export const LearningAndExamView: React.FC<LearningAndExamProps> = ({
   };
 
   const handleDeleteAssignment = async (id: string) => {
-    const res = await fetch(`/api/assignments/${id}`, { method: 'DELETE', headers });
+    const res = await apiFetch(`/api/assignments/${id}`, { method: 'DELETE', headers });
     if (res.ok) {
       await onRefresh();
       notify('Tugas online berhasil dihapus.');
@@ -258,7 +259,7 @@ export const LearningAndExamView: React.FC<LearningAndExamProps> = ({
   };
 
   const handleDeleteExam = async (id: string) => {
-    const res = await fetch(`/api/exams/${id}`, { method: 'DELETE', headers });
+    const res = await apiFetch(`/api/exams/${id}`, { method: 'DELETE', headers });
     if (res.ok) {
       await onRefresh();
       notify('Paket ujian CBT berhasil dihapus.');
@@ -293,7 +294,7 @@ export const LearningAndExamView: React.FC<LearningAndExamProps> = ({
   const handleSubmitAssignment = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!activeSubmitAsg) return;
-    const res = await fetch(`/api/assignments/${activeSubmitAsg.id}/submit`, {
+    const res = await apiFetch(`/api/assignments/${activeSubmitAsg.id}/submit`, {
       method: 'POST',
       headers,
       body: JSON.stringify(submitForm),
@@ -309,7 +310,7 @@ export const LearningAndExamView: React.FC<LearningAndExamProps> = ({
   const handleSaveGradeSubmission = async (asgId: string, submissionId: string) => {
     const inp = gradeInputs[submissionId];
     if (!inp) return;
-    const res = await fetch(`/api/assignments/${asgId}/grade`, {
+    const res = await apiFetch(`/api/assignments/${asgId}/grade`, {
       method: 'POST',
       headers,
       body: JSON.stringify({
@@ -350,7 +351,7 @@ export const LearningAndExamView: React.FC<LearningAndExamProps> = ({
         points: 50,
       },
     ];
-    const res = await fetch('/api/exams', {
+    const res = await apiFetch('/api/exams', {
       method: 'POST',
       headers,
       body: JSON.stringify({ ...examForm, questions: defaultQuestions }),
@@ -382,7 +383,7 @@ export const LearningAndExamView: React.FC<LearningAndExamProps> = ({
       correctOption: qForm.type === 'pg' ? qForm.correctOption : undefined,
       points: qForm.points,
     };
-    const res = await fetch(`/api/exams/${activeQuestionExam.id}/questions`, {
+    const res = await apiFetch(`/api/exams/${activeQuestionExam.id}/questions`, {
       method: 'POST',
       headers,
       body: JSON.stringify(payload),
@@ -416,7 +417,7 @@ export const LearningAndExamView: React.FC<LearningAndExamProps> = ({
 
   const submitExamRunner = async () => {
     if (!runningExam) return;
-    const res = await fetch(`/api/exams/${runningExam.id}/submit`, {
+    const res = await apiFetch(`/api/exams/${runningExam.id}/submit`, {
       method: 'POST',
       headers,
       body: JSON.stringify({ answers: examAnswers }),

@@ -229,21 +229,14 @@ export const LandingAndLogin: React.FC<PublicOverviewProps> = ({
                     src={settings.bannerBuildingUrl}
                     alt="Gedung MA EL-BAYAN"
                     referrerPolicy="no-referrer"
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover object-[center_52%]"
                   />
                 ) : (
                   <img
-                    src="/assets/aistudio/Modern_Islamic_E-Learning_Dashboard_3dfd0007.png"
+                    src="/assets/aistudio/image_332d94df.png"
                     alt="Gedung MA EL-BAYAN"
                     referrerPolicy="no-referrer"
-                    className="absolute max-w-none"
-                    style={{
-                      width: '210%',
-                      height: '460%',
-                      right: '-2%',
-                      top: '-52%',
-                      objectFit: 'cover',
-                    }}
+                    className="w-full h-full object-cover object-[center_52%]"
                   />
                 )}
                 <div className="absolute inset-0 bg-gradient-to-t from-[#022C22] via-transparent to-transparent" />

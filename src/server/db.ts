@@ -21,6 +21,7 @@ import type {
   NotificationItem,
   ActivityChartPoint,
 } from '../types.ts';
+import { comprehensiveMaterials } from '../data/learningMaterialsData.ts';
 
 export interface UserWithHash extends UserAccount {
   passwordHash: string;
@@ -244,7 +245,7 @@ export function createInitialDatabase(): DatabaseSchema {
       activeAcademicYear: '2025/2026',
       activeSemester: 'Ganjil',
       logoUrl: '/assets/aistudio/images_be5eb3cc.jpeg',
-      bannerBuildingUrl: '/assets/aistudio/Modern_Islamic_E-Learning_Dashboard_3dfd0007.png',
+      bannerBuildingUrl: '/assets/aistudio/image_332d94df.png',
       islamicQuote: '“Ilmu adalah cahaya, dan pendidikan adalah jalan menuju kesuksesan.”',
     },
     users: [
@@ -325,98 +326,7 @@ export function createInitialDatabase(): DatabaseSchema {
     subjects,
     teachers: generateInitialTeachers(),
     students: generateInitialStudents(),
-    materials: [
-      {
-        id: 'mat-1',
-        title: "Keautentikan Al-Qur'an dan Kemukjizatannya (I'jazul Qur'an)",
-        subjectName: "Al-Qur'an Hadis",
-        className: 'Kelas X-A',
-        teacherName: 'Ustadz H. Muhammad Ridwan, Lc., M.Ag',
-        category: 'Modul PDF',
-        description: "Pembahasan lengkap mengenai sejarah kodifikasi Al-Qur'an pada masa Khulafaur Rasyidin serta bukti kemukjizatan bahasa dan ilmiah dalam Al-Qur'an.",
-        contentSummary: "1. Pengertian I'jazul Qur'an secara etimologi dan terminologi ulama tafsir.\n2. Aspek kemukjizatan kebahasaan (Balaghah & الفصاحة), pemberitaan ghaib, dan isyarat ilmiah (Ayat Kauniyah).\n3. Dalil Naqli QS. Al-Isra: 88, QS. Al-Baqarah: 23-24, dan QS. Al-Hijr: 9 tentang penjagaan Allah SWT terhadap kemurnian Al-Qur'an.",
-        fileName: 'Modul_Bab1_Keautentikan_AlQuran_KelasX.pdf',
-        fileSize: '2.4 MB',
-        downloads: 128,
-        views: 312,
-        createdAt: '2025-12-01',
-      },
-      {
-        id: 'mat-2',
-        title: 'Kaidah Ushul Fikih & Konsep Ibadah Mahdhah serta Ghairu Mahdhah',
-        subjectName: 'Fikih',
-        className: 'Kelas X-A',
-        teacherName: 'KH. Ahmad Baihaqi, S.Ag., M.Pd.I',
-        category: 'Kitab & Referensi',
-        description: 'Kajian fikih ibadah berdasarkan empat mazhab serta penerapan kaidah fikih dalam kehidupan modern.',
-        contentSummary: "1. Perbedaan karakteristik Ibadah Mahdhah (Thaharah, Shalat, Zakat, Puasa, Haji) dan Ibadah Muamalah.\n2. Lima Kaidah Asasiyah Fikih (Al-Qawa'id Al-Fiqhiyyah Al-Kubra): Al-Umuru bi Maqashidiha, Al-Yaqinu La Yuzalu bis-Syak, Al-Masyaqqatu Tajlibut-Taisir, Ad-Dhararu Yuzal, Al-'Adatu Muhakkamah.",
-        fileName: 'Kitab_Fikih_Ibadah_dan_Qawaid_MA_ElBayan.pdf',
-        fileSize: '3.1 MB',
-        downloads: 96,
-        views: 245,
-        createdAt: '2025-12-03',
-      },
-      {
-        id: 'mat-3',
-        title: 'Fungsi Eksponensial, Logaritma, dan Aplikasi pada Perhitungan Zakat & Waris',
-        subjectName: 'Matematika',
-        className: 'Kelas X-A',
-        teacherName: 'Hendra Kusuma, S.Pd., M.Si',
-        category: 'Presentasi',
-        description: 'Materi interaktif persamaan eksponen, sifat-sifat logaritma, grafik fungsi, dan latihan soal HOTS.',
-        contentSummary: '1. Sifat-sifat pangkat bulat dan rasional.\n2. Grafik fungsi eksponen f(x) = a^x.\n3. Definisi dan sifat-sifat logaritma beserta penyelesaian persamaan logaritma.',
-        fileName: 'Slide_Eksponen_dan_Logaritma_KelasX.pdf',
-        fileSize: '1.8 MB',
-        downloads: 142,
-        views: 340,
-        createdAt: '2025-12-04',
-      },
-      {
-        id: 'mat-4',
-        title: 'Hukum Newton tentang Gerak dan Gravitasi Semesta',
-        subjectName: 'Fisika',
-        className: 'Kelas X-A',
-        teacherName: 'Bambang Suryono, S.Si., M.Pd',
-        category: 'Video Pembelajaran',
-        description: 'Penjelasan dinamika partikel, diagram benda bebas, gaya gesek, serta keteraturan orbit planet sebagai tanda kebesaran Allah SWT (QS. Yasin: 38-40).',
-        contentSummary: '1. Hukum I Newton (Inersia/Kelembaman): ∑F = 0.\n2. Hukum II Newton: a = ∑F / m.\n3. Hukum III Newton (Aksi-Reaksi) dan aplikasi pada bidang miring serta sistem katrol.',
-        fileName: 'Panduan_Praktikum_Hukum_Newton_ElBayan.pdf',
-        fileSize: '4.5 MB',
-        downloads: 89,
-        views: 210,
-        createdAt: '2025-12-05',
-      },
-      {
-        id: 'mat-5',
-        title: 'Qawaid Nahwu & Sharaf: Jumlah Ismiyyah dan Jumlah Fi\'liyyah',
-        subjectName: 'Bahasa Arab',
-        className: 'Kelas X-A',
-        teacherName: 'Ustadz Mahmud Yunus, Lc., M.A.',
-        category: 'Modul PDF',
-        description: 'Panduan praktis menyusun kalimat bahasa Arab fusha (Mubtada-Khabar dan Fi\'il-Fa\'il-Maf\'ul Bih) disertai hiwar sehari-hari.',
-        contentSummary: '1. Struktur Jumlah Ismiyyah (المبتدأ والخبر) dan kesesuaian mudzakkar-muannats.\n2. Struktur Jumlah Fi\'liyyah (الفعل والفاعل والمفعول به).\n3. Kosa kata (Mufradat) lingkungan madrasah dan perpustakaan.',
-        fileName: 'Modul_Bahasa_Arab_Nahwu_Sharaf_KelasX.pdf',
-        fileSize: '2.9 MB',
-        downloads: 114,
-        views: 278,
-        createdAt: '2025-12-06',
-      },
-      {
-        id: 'mat-6',
-        title: 'Teks Laporan Hasil Observasi & Teks Eksposisi Kritis',
-        subjectName: 'Bahasa Indonesia',
-        className: 'Kelas X-A',
-        teacherName: 'Dra. Ratna Sari Dewi, M.Pd',
-        category: 'Modul PDF',
-        description: 'Kaidah kebahasaan, struktur tesis-argumentasi-penegasan ulang, dan penulisan karya ilmiah remaja.',
-        contentSummary: '1. Struktur Teks LHO: Pernyataan Umum, Deskripsi Bagian, Deskripsi Manfaat.\n2. Struktur Teks Eksposisi: Tesis, Rangkaian Argumen Fakta, Penegasan Ulang.',
-        fileName: 'Modul_Bahasa_Indonesia_Bab3_Eksposisi.pdf',
-        fileSize: '1.6 MB',
-        downloads: 105,
-        views: 230,
-        createdAt: '2025-12-07',
-      },
-    ],
+    materials: comprehensiveMaterials,
     assignments: [
       {
         id: 'asg-1',
@@ -951,6 +861,14 @@ export function getDb(): DatabaseSchema {
         cachedDb.settings.logoUrl = '/assets/aistudio/images_be5eb3cc.jpeg';
         changed = true;
       }
+      if (
+        !cachedDb.settings.bannerBuildingUrl ||
+        cachedDb.settings.bannerBuildingUrl === '' ||
+        cachedDb.settings.bannerBuildingUrl.includes('Modern_Islamic_E-Learning_Dashboard_3dfd0007.png')
+      ) {
+        cachedDb.settings.bannerBuildingUrl = '/assets/aistudio/image_332d94df.png';
+        changed = true;
+      }
       if (Array.isArray(cachedDb.announcements)) {
         for (const ann of cachedDb.announcements) {
           if (ann.authorName && ann.authorName.includes('Abdul Hakim')) {
@@ -984,6 +902,20 @@ export function getDb(): DatabaseSchema {
         for (const sch of cachedDb.schedules) {
           if (sch.teacherName && sch.teacherName.includes('Ahmad Fauzi')) {
             sch.teacherName = 'Ilham Maulana, S.Kom';
+            changed = true;
+          }
+        }
+      }
+      if (Array.isArray(cachedDb.materials)) {
+        for (const compMat of comprehensiveMaterials) {
+          const idx = cachedDb.materials.findIndex((m) => m.id === compMat.id);
+          if (idx !== -1) {
+            if (!cachedDb.materials[idx].fullContent || cachedDb.materials[idx].fullContent !== compMat.fullContent) {
+              cachedDb.materials[idx] = { ...cachedDb.materials[idx], ...compMat };
+              changed = true;
+            }
+          } else {
+            cachedDb.materials.push(compMat);
             changed = true;
           }
         }

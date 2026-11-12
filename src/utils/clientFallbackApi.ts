@@ -19,6 +19,7 @@ import {
   UserAccount,
   UserRole,
 } from '../types.ts';
+import { comprehensiveMaterials } from '../data/learningMaterialsData.ts';
 
 const STORAGE_KEY = 'elbayan_client_db_v1';
 const TOKEN_KEY = 'elbayan_client_auth_token';
@@ -57,6 +58,21 @@ function getStoredDb(): ClientDatabase {
       if (parsed.settings) {
         parsed.settings.headmasterName = 'Hj. Faiqoh Subky, S.H., M.Pd.';
         parsed.settings.logoUrl = '/assets/aistudio/images_be5eb3cc.jpeg';
+        if (!parsed.settings.bannerBuildingUrl || parsed.settings.bannerBuildingUrl.includes('Modern_Islamic_E-Learning_Dashboard_3dfd0007.png')) {
+          parsed.settings.bannerBuildingUrl = '/assets/aistudio/image_332d94df.png';
+        }
+      }
+      if (Array.isArray(parsed.materials)) {
+        for (const compMat of comprehensiveMaterials) {
+          const idx = parsed.materials.findIndex((m: any) => m.id === compMat.id);
+          if (idx !== -1) {
+            parsed.materials[idx] = { ...parsed.materials[idx], ...compMat };
+          } else {
+            parsed.materials.push(compMat);
+          }
+        }
+      } else {
+        parsed.materials = comprehensiveMaterials;
       }
       return parsed;
     }
@@ -67,7 +83,9 @@ function getStoredDb(): ClientDatabase {
   if (cloned.settings) {
     cloned.settings.headmasterName = 'Hj. Faiqoh Subky, S.H., M.Pd.';
     cloned.settings.logoUrl = '/assets/aistudio/images_be5eb3cc.jpeg';
+    cloned.settings.bannerBuildingUrl = '/assets/aistudio/image_332d94df.png';
   }
+  cloned.materials = comprehensiveMaterials;
   saveStoredDb(cloned);
   return cloned;
 }
@@ -161,7 +179,7 @@ export async function handleClientFallback(url: string, init?: RequestInit): Pro
   // 3. POST /api/auth/login
   if (pathname === '/api/auth/login' && method === 'POST') {
     const body = parseBody(init);
-    const id = String(body.identifier || '').trim().toLowerCase();
+    const id = String(body.identifier || body.username || body.email || '').trim().toLowerCase();
     const user = db.users.find(
       (u) =>
         u.username.toLowerCase() === id ||

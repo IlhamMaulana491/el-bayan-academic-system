@@ -36,9 +36,12 @@ export const SchoolHeroBanner: React.FC<{
   settings: SchoolSettings;
 }> = ({ settings }) => {
   const [activeSlide, setActiveSlide] = useState(0);
-  const isDefaultReference =
-    !settings.bannerBuildingUrl ||
-    settings.bannerBuildingUrl.includes('Modern_Islamic_E-Learning_Dashboard_3dfd0007.png');
+  const effectiveBanner =
+    settings.bannerBuildingUrl &&
+    settings.bannerBuildingUrl.trim() !== '' &&
+    !settings.bannerBuildingUrl.includes('Modern_Islamic_E-Learning_Dashboard_3dfd0007.png')
+      ? settings.bannerBuildingUrl
+      : '/assets/aistudio/image_332d94df.png';
 
   const slides = [
     {
@@ -65,63 +68,56 @@ export const SchoolHeroBanner: React.FC<{
 
   return (
     <div className="relative w-full rounded-2xl overflow-hidden shadow-sm border border-emerald-900/10 bg-[#064E3B] min-h-[168px] sm:min-h-[188px] lg:min-h-[200px] flex items-center">
-      {/* If using the reference dashboard asset, we can either show the custom uploaded photo or crop the right building section cleanly */}
-      {isDefaultReference ? (
-        <div className="absolute inset-0 flex">
-          {/* Left deep emerald background */}
-          <div className="w-full lg:w-[55%] h-full bg-gradient-to-r from-[#043927] via-[#064E3B] to-[#065F46] relative overflow-hidden">
-            {/* Subtle Islamic geometric circle & mosque dome watermark */}
-            <svg
-              className="absolute -top-12 right-8 w-64 h-64 text-emerald-400/10 pointer-events-none"
-              viewBox="0 0 200 200"
-              fill="currentColor"
-            >
-              <circle cx="100" cy="100" r="85" fill="none" stroke="currentColor" strokeWidth="14" strokeDasharray="12 8" />
-              <circle cx="100" cy="100" r="60" fill="none" stroke="currentColor" strokeWidth="6" />
-            </svg>
-            {/* Top-left Gold Corner Wave Accent */}
-            <svg className="absolute top-0 left-0 w-44 h-28 pointer-events-none" viewBox="0 0 200 120" fill="none">
-              <path d="M0 0H180C120 15 60 50 0 110V0Z" fill="url(#bannerGoldTop)" opacity="0.85" />
-              <path d="M0 0H130C85 12 40 38 0 80V0Z" fill="#043927" opacity="0.55" />
-              <defs>
-                <linearGradient id="bannerGoldTop" x1="0" y1="0" x2="180" y2="100" gradientUnits="userSpaceOnUse">
-                  <stop stopColor="#F59E0B" />
-                  <stop offset="1" stopColor="#FDE047" stopOpacity="0.2" />
-                </linearGradient>
-              </defs>
-            </svg>
-          </div>
+      {/* Background layer */}
+      <div className="absolute inset-0 flex">
+        {/* Left deep emerald background */}
+        <div className="w-full lg:w-[50%] h-full bg-gradient-to-r from-[#043927] via-[#064E3B] to-[#065F46] relative overflow-hidden">
+          {/* Subtle Islamic geometric circle & mosque dome watermark */}
+          <svg
+            className="absolute -top-12 right-8 w-64 h-64 text-emerald-400/10 pointer-events-none"
+            viewBox="0 0 200 200"
+            fill="currentColor"
+          >
+            <circle cx="100" cy="100" r="85" fill="none" stroke="currentColor" strokeWidth="14" strokeDasharray="12 8" />
+            <circle cx="100" cy="100" r="60" fill="none" stroke="currentColor" strokeWidth="6" />
+          </svg>
+          {/* Top-left Gold Corner Wave Accent */}
+          <svg className="absolute top-0 left-0 w-44 h-28 pointer-events-none" viewBox="0 0 200 120" fill="none">
+            <path d="M0 0H180C120 15 60 50 0 110V0Z" fill="url(#bannerGoldTop)" opacity="0.85" />
+            <path d="M0 0H130C85 12 40 38 0 80V0Z" fill="#043927" opacity="0.55" />
+            <defs>
+              <linearGradient id="bannerGoldTop" x1="0" y1="0" x2="180" y2="100" gradientUnits="userSpaceOnUse">
+                <stop stopColor="#F59E0B" />
+                <stop offset="1" stopColor="#FDE047" stopOpacity="0.2" />
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
 
-          {/* Right side: Exact cropped school building photo from reference image */}
-          <div className="hidden md:block md:w-[58%] h-full relative overflow-hidden ml-auto">
-            <img
-              src="/assets/aistudio/Modern_Islamic_E-Learning_Dashboard_3dfd0007.png"
-              alt="Gedung Madrasah Aliyah EL-BAYAN"
-              referrerPolicy="no-referrer"
-              className="absolute max-w-none"
-              style={{
-                width: '215%',
-                height: '500%',
-                right: '-2.6%',
-                top: '-55.5%',
-                objectFit: 'cover',
-              }}
-            />
-            {/* Smooth gradient blend from left emerald text zone into the building photo */}
-            <div className="absolute inset-y-0 left-0 w-36 bg-gradient-to-r from-[#064E3B] via-[#064E3B]/80 to-transparent" />
-          </div>
-        </div>
-      ) : (
-        <div className="absolute inset-0">
+        {/* Right side: Real school building photo */}
+        <div className="hidden md:block md:w-[58%] h-full relative overflow-hidden ml-auto">
           <img
-            src={settings.bannerBuildingUrl}
-            alt="Gedung MA EL-BAYAN"
+            src={effectiveBanner}
+            alt="Gedung Madrasah Aliyah EL-BAYAN"
             referrerPolicy="no-referrer"
-            className="w-full h-full object-cover object-center"
+            className="w-full h-full object-cover object-[center_52%]"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#043927]/95 via-[#064E3B]/85 to-emerald-950/25" />
+          {/* Smooth gradient blend from left emerald text zone into the building photo */}
+          <div className="absolute inset-y-0 left-0 w-36 bg-gradient-to-r from-[#064E3B] via-[#064E3B]/80 to-transparent" />
+          <div className="absolute inset-0 bg-emerald-950/15" />
         </div>
-      )}
+      </div>
+
+      {/* For small screens: subtle building watermark backdrop */}
+      <div className="md:hidden absolute inset-0 pointer-events-none">
+        <img
+          src={effectiveBanner}
+          alt="Gedung MA EL-BAYAN"
+          referrerPolicy="no-referrer"
+          className="w-full h-full object-cover object-[center_52%]"
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#043927]/95 via-[#064E3B]/90 to-emerald-950/70" />
+      </div>
 
       {/* Foreground Text Content */}
       <div className="relative z-10 px-6 sm:px-10 py-6 w-full lg:w-[62%]">

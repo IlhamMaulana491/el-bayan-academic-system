@@ -111,6 +111,9 @@ export interface LearningMaterial {
   category: 'Modul PDF' | 'Presentasi' | 'Video Pembelajaran' | 'Kitab & Referensi';
   description: string;
   contentSummary: string;
+  fullContent?: string;
+  readingTimeMinutes?: number;
+  keyPoints?: string[];
   fileName: string;
   fileSize: string;
   fileDataUrl?: string;

@@ -1577,20 +1577,13 @@ export const AcademicAndOperationsView: React.FC<AcademicOpsProps> = ({
                   <img
                     src={schoolForm.bannerBuildingUrl}
                     alt="Preview Gedung"
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover object-[center_52%]"
                   />
                 ) : (
                   <img
-                    src="/assets/aistudio/Modern_Islamic_E-Learning_Dashboard_3dfd0007.png"
-                    alt="Gedung Default MA EL-BAYAN"
-                    className="absolute max-w-none"
-                    style={{
-                      width: '210%',
-                      height: '450%',
-                      right: '-2%',
-                      top: '-52%',
-                      objectFit: 'cover',
-                    }}
+                    src="/assets/aistudio/image_332d94df.png"
+                    alt="Gedung Asli MA EL-BAYAN"
+                    className="w-full h-full object-cover object-[center_52%]"
                   />
                 )}
               </div>
@@ -1614,7 +1607,7 @@ export const AcademicAndOperationsView: React.FC<AcademicOpsProps> = ({
                   onClick={() =>
                     setSchoolForm({
                       ...schoolForm,
-                      bannerBuildingUrl: '/assets/aistudio/Modern_Islamic_E-Learning_Dashboard_3dfd0007.png',
+                      bannerBuildingUrl: '/assets/aistudio/image_332d94df.png',
                     })
                   }
                   className="px-3 py-2 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-100 flex items-center gap-1 cursor-pointer"

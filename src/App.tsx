@@ -118,7 +118,7 @@ export default function App() {
     activeAcademicYear: '2025/2026',
     activeSemester: 'Ganjil',
     logoUrl: '/assets/aistudio/images_be5eb3cc.jpeg',
-    bannerBuildingUrl: '/assets/aistudio/Modern_Islamic_E-Learning_Dashboard_3dfd0007.png',
+    bannerBuildingUrl: '/assets/aistudio/image_332d94df.png',
     islamicQuote: '“Ilmu adalah cahaya, dan pendidikan adalah jalan menuju kesuksesan.”',
   });
 
@@ -1111,7 +1111,7 @@ export default function App() {
             <span className="text-[#F59E0B]">👑</span>
             <span className="font-bold text-[#064E3B]">{settings.shortName}</span>
             <span className="text-slate-300">|</span>
-            <span>Madrasah Aliyah</span>
+            <span>Madrasah Aliyah Terpadu</span>
           </div>
 
           <div className="flex items-center gap-1.5 text-slate-600 font-medium">

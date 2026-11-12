@@ -4,7 +4,11 @@ export async function apiFetch(input: string, init?: RequestInit): Promise<Respo
   try {
     const response = await fetch(input, init);
     const contentType = response.headers.get('content-type') || '';
-    if (response.status === 404 || (contentType.includes('text/html') && !input.includes('.html'))) {
+    if (
+      response.status === 404 ||
+      response.status >= 500 ||
+      (contentType.includes('text/html') && !input.includes('.html'))
+    ) {
       return await handleClientFallback(input, init);
     }
     return response;

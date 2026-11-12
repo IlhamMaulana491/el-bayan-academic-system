@@ -85,7 +85,8 @@ app.get('/api/public/overview', (_req, res) => {
 });
 
 app.post('/api/auth/login', (req, res) => {
-  const { identifier, password } = req.body;
+  const { identifier: rawId, username, email, password } = req.body || {};
+  const identifier = rawId || username || email;
   if (!identifier || !password) {
     res.status(400).json({ error: 'Harap masukkan Email/Username/NIP/NISN dan Password.' });
     return;

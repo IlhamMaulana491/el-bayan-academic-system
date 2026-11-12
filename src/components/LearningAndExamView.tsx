@@ -14,6 +14,9 @@ import {
   Play,
   HelpCircle,
   Search,
+  Sparkles,
+  Lightbulb,
+  Check,
 } from 'lucide-react';
 import {
   Assignment,
@@ -39,6 +42,140 @@ interface LearningAndExamProps {
   notify: (msg: string) => void;
 }
 
+function FormattedMaterialContent({
+  content,
+  fontSize,
+}: {
+  content: string;
+  fontSize: 'sm' | 'md' | 'lg';
+}) {
+  const textSizeClass = {
+    sm: 'text-xs sm:text-sm',
+    md: 'text-sm sm:text-base',
+    lg: 'text-base sm:text-lg',
+  }[fontSize];
+
+  const lines = content.split('\n');
+
+  return (
+    <div className={`space-y-3.5 text-slate-800 leading-relaxed ${textSizeClass}`}>
+      {lines.map((line, idx) => {
+        const trimmed = line.trim();
+        if (!trimmed) return <div key={idx} className="h-1.5" />;
+
+        // Header 3: ###
+        if (trimmed.startsWith('### ')) {
+          return (
+            <h3
+              key={idx}
+              className="text-base sm:text-xl font-bold text-[#064E3B] pt-4 pb-1 border-b border-emerald-100 flex items-center gap-2"
+            >
+              <span className="w-2 h-5 rounded-full bg-[#F59E0B] inline-block shrink-0" />
+              <span>{trimmed.replace('### ', '')}</span>
+            </h3>
+          );
+        }
+
+        // Header 4: ####
+        if (trimmed.startsWith('#### ')) {
+          return (
+            <h4
+              key={idx}
+              className="text-sm sm:text-base font-bold text-[#065F46] pt-2"
+            >
+              {trimmed.replace('#### ', '')}
+            </h4>
+          );
+        }
+
+        // Horizontal Rule: ---
+        if (trimmed === '---') {
+          return <hr key={idx} className="my-3 border-slate-200" />;
+        }
+
+        // Blockquote: >
+        if (trimmed.startsWith('> ')) {
+          return (
+            <blockquote
+              key={idx}
+              className="p-3.5 sm:p-4 rounded-xl bg-gradient-to-r from-emerald-50 via-emerald-50/60 to-amber-50/40 border-l-4 border-[#059669] text-emerald-950 font-medium italic shadow-2xs my-2.5 text-xs sm:text-sm"
+            >
+              {trimmed.replace('> ', '')}
+            </blockquote>
+          );
+        }
+
+        // Table Row: | ... |
+        if (trimmed.startsWith('|') && trimmed.endsWith('|')) {
+          if (trimmed.includes('---')) return null;
+          const cells = trimmed
+            .split('|')
+            .map((c) => c.trim())
+            .filter((c, i, arr) => i > 0 && i < arr.length - 1);
+          return (
+            <div
+              key={idx}
+              className="grid grid-cols-2 sm:grid-cols-3 gap-2 p-2.5 rounded-lg bg-slate-50 border border-slate-200 text-xs font-mono"
+            >
+              {cells.map((cell, cIdx) => (
+                <div key={cIdx} className="truncate">
+                  {cell}
+                </div>
+              ))}
+            </div>
+          );
+        }
+
+        // Bullet point: - or *
+        if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
+          return (
+            <div key={idx} className="flex items-start gap-2.5 pl-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 mt-2 shrink-0" />
+              <span className="flex-1">{trimmed.substring(2)}</span>
+            </div>
+          );
+        }
+
+        // Numbered list: e.g. 1. 2. 3.
+        if (/^\d+\.\s/.test(trimmed)) {
+          return (
+            <div key={idx} className="flex items-start gap-2.5 pl-2">
+              <span className="text-emerald-700 font-bold shrink-0">
+                {trimmed.match(/^\d+\./)?.[0]}
+              </span>
+              <span className="flex-1">{trimmed.replace(/^\d+\.\s*/, '')}</span>
+            </div>
+          );
+        }
+
+        // Normal paragraph (supports **bold** and *italic*)
+        const parts = trimmed.split(/(\*\*.*?\*\*|\*.*?\*)/g);
+        return (
+          <p key={idx} className="leading-relaxed">
+            {parts.map((part, pIdx) => {
+              if (part.startsWith('**') && part.endsWith('**')) {
+                return (
+                  <strong key={pIdx} className="font-bold text-slate-900">
+                    {part.slice(2, -2)}
+                  </strong>
+                );
+              }
+              if (part.startsWith('*') && part.endsWith('*')) {
+                return (
+                  <em key={pIdx} className="italic text-slate-700">
+                    {part.slice(1, -1)}
+                  </em>
+                );
+              }
+              return part;
+            })}
+          </p>
+        );
+      })}
+    </div>
+  );
+}
+
 export const LearningAndExamView: React.FC<LearningAndExamProps> = ({
   mode,
   initialSubTab = 'tugas',
@@ -62,6 +199,33 @@ export const LearningAndExamView: React.FC<LearningAndExamProps> = ({
 
   // Modals for Materi
   const [selectedMaterial, setSelectedMaterial] = useState<LearningMaterial | null>(null);
+  const [readerTab, setReaderTab] = useState<'konten' | 'poin' | 'ringkasan'>('konten');
+  const [readerFontSize, setReaderFontSize] = useState<'sm' | 'md' | 'lg'>('md');
+  const [completedReads, setCompletedReads] = useState<string[]>(() => {
+    try {
+      const raw = localStorage.getItem('elbayan_completed_reads');
+      return raw ? JSON.parse(raw) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  const toggleCompleteRead = (materialId: string) => {
+    setCompletedReads((prev) => {
+      const next = prev.includes(materialId)
+        ? prev.filter((id) => id !== materialId)
+        : [...prev, materialId];
+      try {
+        localStorage.setItem('elbayan_completed_reads', JSON.stringify(next));
+      } catch {}
+      return next;
+    });
+    notify(
+      completedReads.includes(materialId)
+        ? 'Status selesai membaca dibatalkan.'
+        : 'Alhamdulillah! Anda telah menyelesaikan membaca materi ini. Catatan telah tersimpan.'
+    );
+  };
   const [showAddMaterial, setShowAddMaterial] = useState(false);
   const [matForm, setMatForm] = useState({
     title: '',
@@ -695,28 +859,56 @@ export const LearningAndExamView: React.FC<LearningAndExamProps> = ({
 
               <div className="mt-5 pt-3.5 border-t border-slate-100 space-y-3">
                 <div className="flex items-center justify-between text-[11px] text-slate-500 tabular-nums">
-                  <span className="truncate">{mat.teacherName}</span>
-                  <span>{mat.downloads}x diunduh · {mat.fileSize}</span>
+                  <span className="truncate max-w-[150px]">{mat.teacherName}</span>
+                  <div className="flex items-center gap-2">
+                    {completedReads.includes(mat.id) && (
+                      <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                        <Check className="w-3 h-3 text-emerald-600" />
+                        Selesai
+                      </span>
+                    )}
+                    <span className="text-emerald-800 font-semibold flex items-center gap-1">
+                      <Clock className="w-3 h-3 text-emerald-600" />
+                      ±{mat.readingTimeMinutes || 10} mnt
+                    </span>
+                  </div>
                 </div>
 
-                <div className="flex items-center gap-2">
+                {!canManage ? (
+                  /* Tampilan Siswa: Tanpa tombol unduh, langsung tombol baca materi penuh */
                   <button
                     type="button"
-                    onClick={() => setSelectedMaterial(mat)}
-                    className="flex-1 py-2 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                    onClick={() => {
+                      setSelectedMaterial(mat);
+                      setReaderTab('konten');
+                    }}
+                    className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-[#065F46] via-[#044E39] to-[#033728] hover:opacity-95 text-white text-xs font-bold flex items-center justify-center gap-2 transition-all shadow-xs hover:shadow-md cursor-pointer"
                   >
-                    <Eye className="w-3.5 h-3.5" />
-                    <span>Baca Materi</span>
+                    <BookOpen className="w-4 h-4 text-[#FBBF24]" />
+                    <span>Baca Materi Pembelajaran</span>
                   </button>
-                  <button
-                    type="button"
-                    onClick={() => handleDownloadMaterial(mat)}
-                    className="flex-1 py-2 px-3 rounded-xl bg-[#065F46] hover:bg-[#047857] text-white text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
-                  >
-                    <Download className="w-3.5 h-3.5" />
-                    <span>Unduh File</span>
-                  </button>
-                  {canManage && (
+                ) : (
+                  /* Tampilan Guru / Admin */
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSelectedMaterial(mat);
+                        setReaderTab('konten');
+                      }}
+                      className="flex-1 py-2 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                    >
+                      <Eye className="w-3.5 h-3.5" />
+                      <span>Baca Materi</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleDownloadMaterial(mat)}
+                      className="flex-1 py-2 px-3 rounded-xl bg-[#065F46] hover:bg-[#047857] text-white text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                    >
+                      <Download className="w-3.5 h-3.5" />
+                      <span>Unduh File</span>
+                    </button>
                     <button
                       type="button"
                       onClick={() => handleDeleteMaterial(mat.id)}
@@ -725,52 +917,267 @@ export const LearningAndExamView: React.FC<LearningAndExamProps> = ({
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
-                  )}
-                </div>
+                  </div>
+                )}
               </div>
             </div>
           ))}
         </div>
 
-        {/* Read Material Modal */}
+        {/* Read Material Interactive Reader Modal */}
         {selectedMaterial && (
-          <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4">
-            <div className="bg-white rounded-2xl max-w-2xl w-full p-6 shadow-xl border border-slate-200 space-y-4">
-              <div className="flex items-start justify-between gap-4 border-b border-slate-100 pb-3">
-                <div>
-                  <div className="text-xs font-semibold text-emerald-700">
-                    {selectedMaterial.subjectName} · {selectedMaterial.className}
+          <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-3 sm:p-5">
+            <div className="bg-white rounded-3xl max-w-4xl w-full max-h-[92vh] shadow-2xl border border-slate-200 flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+              {/* Header Reader */}
+              <div className="p-5 sm:p-6 bg-gradient-to-r from-[#033728] via-[#054E37] to-[#065F46] text-white shrink-0">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="space-y-1.5 min-w-0">
+                    <div className="flex flex-wrap items-center gap-2 text-xs">
+                      <span className="bg-[#F59E0B] text-slate-950 font-extrabold px-2.5 py-0.5 rounded-full shadow-xs">
+                        {selectedMaterial.subjectName}
+                      </span>
+                      <span className="bg-white/20 text-white font-medium px-2 py-0.5 rounded-full">
+                        {selectedMaterial.className}
+                      </span>
+                      <span className="bg-white/10 text-emerald-100 px-2 py-0.5 rounded-full flex items-center gap-1 font-mono text-[11px]">
+                        <Clock className="w-3 h-3 text-[#FDE047]" />
+                        ±{selectedMaterial.readingTimeMinutes || 10} Menit Membaca
+                      </span>
+                    </div>
+                    <h2 className="text-lg sm:text-2xl font-bold leading-tight text-white drop-shadow-xs">
+                      {selectedMaterial.title}
+                    </h2>
+                    <p className="text-xs text-emerald-100/90 flex items-center gap-2">
+                      <span>Guru Pengampu: <strong>{selectedMaterial.teacherName}</strong></span>
+                      <span>•</span>
+                      <span>Kategori: {selectedMaterial.category}</span>
+                    </p>
                   </div>
-                  <h3 className="text-lg font-bold text-slate-900 mt-0.5">{selectedMaterial.title}</h3>
-                  <p className="text-xs text-slate-500 mt-0.5">Oleh: {selectedMaterial.teacherName}</p>
+
+                  <div className="flex items-center gap-2 shrink-0">
+                    {/* Font Size Adjuster */}
+                    <div className="hidden sm:flex items-center bg-black/20 rounded-xl p-1 border border-white/10 text-xs">
+                      <span className="text-[10px] text-emerald-200 px-1 font-bold">Huruf:</span>
+                      <button
+                        type="button"
+                        onClick={() => setReaderFontSize('sm')}
+                        className={`px-2 py-1 rounded-lg text-xs font-bold ${
+                          readerFontSize === 'sm' ? 'bg-white text-[#065F46]' : 'text-white/80 hover:text-white'
+                        }`}
+                        title="Ukuran Teks Kecil"
+                      >
+                        A-
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setReaderFontSize('md')}
+                        className={`px-2 py-1 rounded-lg text-xs font-bold ${
+                          readerFontSize === 'md' ? 'bg-white text-[#065F46]' : 'text-white/80 hover:text-white'
+                        }`}
+                        title="Ukuran Teks Standar"
+                      >
+                        A
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setReaderFontSize('lg')}
+                        className={`px-2 py-1 rounded-lg text-xs font-bold ${
+                          readerFontSize === 'lg' ? 'bg-white text-[#065F46]' : 'text-white/80 hover:text-white'
+                        }`}
+                        title="Ukuran Teks Besar"
+                      >
+                        A+
+                      </button>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => setSelectedMaterial(null)}
+                      className="p-2 sm:px-3 sm:py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold transition-colors cursor-pointer"
+                    >
+                      ✕ <span className="hidden sm:inline">Tutup</span>
+                    </button>
+                  </div>
                 </div>
+              </div>
+
+              {/* Navigation Tabs inside Reader */}
+              <div className="px-6 border-b border-slate-200 bg-slate-50 flex items-center gap-2 shrink-0 overflow-x-auto">
                 <button
                   type="button"
-                  onClick={() => setSelectedMaterial(null)}
-                  className="text-xs font-semibold text-slate-500 hover:text-slate-800 cursor-pointer"
+                  onClick={() => setReaderTab('konten')}
+                  className={`py-3 px-4 text-xs font-bold border-b-2 flex items-center gap-2 transition-all cursor-pointer whitespace-nowrap ${
+                    readerTab === 'konten'
+                      ? 'border-[#065F46] text-[#065F46]'
+                      : 'border-transparent text-slate-500 hover:text-slate-800'
+                  }`}
                 >
-                  Tutup ✕
+                  <BookOpen className="w-4 h-4" />
+                  <span>Teks Pembelajaran Lengkap</span>
                 </button>
-              </div>
-              <div className="space-y-3 text-sm text-slate-700">
-                <p className="leading-relaxed">{selectedMaterial.description}</p>
-                <div className="p-4 rounded-xl bg-emerald-50/60 border border-emerald-200/80 whitespace-pre-line text-xs leading-relaxed text-emerald-950">
-                  <div className="font-bold mb-1.5">Ringkasan Pokok Bahasan Modul:</div>
-                  {selectedMaterial.contentSummary || 'Materi lengkap tersedia pada lampiran dokumen.'}
-                </div>
-              </div>
-              <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
-                <span className="text-xs text-slate-500 font-mono">
-                  Lampiran: {selectedMaterial.fileName} ({selectedMaterial.fileSize})
-                </span>
                 <button
                   type="button"
-                  onClick={() => handleDownloadMaterial(selectedMaterial)}
-                  className="px-4 py-2 rounded-xl bg-[#065F46] text-white text-xs font-semibold flex items-center gap-2 cursor-pointer"
+                  onClick={() => setReaderTab('poin')}
+                  className={`py-3 px-4 text-xs font-bold border-b-2 flex items-center gap-2 transition-all cursor-pointer whitespace-nowrap ${
+                    readerTab === 'poin'
+                      ? 'border-[#065F46] text-[#065F46]'
+                      : 'border-transparent text-slate-500 hover:text-slate-800'
+                  }`}
                 >
-                  <Download className="w-4 h-4" />
-                  <span>Unduh Dokumen Lengkap</span>
+                  <Lightbulb className="w-4 h-4 text-amber-600" />
+                  <span>Poin-Poin Kunci & Hikmah</span>
+                  {selectedMaterial.keyPoints && selectedMaterial.keyPoints.length > 0 && (
+                    <span className="bg-emerald-100 text-emerald-800 text-[10px] px-1.5 py-0.2 rounded-full font-bold">
+                      {selectedMaterial.keyPoints.length}
+                    </span>
+                  )}
                 </button>
+                <button
+                  type="button"
+                  onClick={() => setReaderTab('ringkasan')}
+                  className={`py-3 px-4 text-xs font-bold border-b-2 flex items-center gap-2 transition-all cursor-pointer whitespace-nowrap ${
+                    readerTab === 'ringkasan'
+                      ? 'border-[#065F46] text-[#065F46]'
+                      : 'border-transparent text-slate-500 hover:text-slate-800'
+                  }`}
+                >
+                  <FileText className="w-4 h-4 text-blue-600" />
+                  <span>Silabus & Deskripsi Modul</span>
+                </button>
+              </div>
+
+              {/* Scrollable Reader Body */}
+              <div className="flex-1 p-6 overflow-y-auto bg-white">
+                {readerTab === 'konten' && (
+                  <div className="max-w-3xl mx-auto space-y-6">
+                    {/* Introductory Box */}
+                    <div className="p-4 rounded-2xl bg-emerald-50/70 border border-emerald-200/80 flex items-start gap-3">
+                      <Sparkles className="w-5 h-5 text-emerald-700 shrink-0 mt-0.5" />
+                      <div>
+                        <div className="text-xs font-bold text-emerald-900">
+                          Panduan Membaca Santri:
+                        </div>
+                        <p className="text-xs text-emerald-800/90 leading-relaxed mt-0.5">
+                          {selectedMaterial.description}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Rich Formatted Reading Text */}
+                    {selectedMaterial.fullContent ? (
+                      <FormattedMaterialContent
+                        content={selectedMaterial.fullContent}
+                        fontSize={readerFontSize}
+                      />
+                    ) : (
+                      <div className="space-y-4">
+                        <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 whitespace-pre-line text-sm leading-relaxed text-slate-800">
+                          {selectedMaterial.contentSummary}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {readerTab === 'poin' && (
+                  <div className="max-w-3xl mx-auto space-y-4">
+                    <div className="p-4 rounded-2xl bg-amber-50/80 border border-amber-200 text-xs text-amber-950 font-medium leading-relaxed">
+                      💡 <strong>Tips Menghafal & Memahami:</strong> Berikut intisari pokok bahasan yang sering keluar pada evaluasi ulangan harian dan ujian semester (PAS/PAT).
+                    </div>
+
+                    <div className="grid grid-cols-1 gap-3.5 pt-2">
+                      {(selectedMaterial.keyPoints && selectedMaterial.keyPoints.length > 0
+                        ? selectedMaterial.keyPoints
+                        : [
+                            'Pahami konsep dasar materi dan keterkaitannya dengan kehidupan sehari-hari.',
+                            'Kuasai dalil atau rumus pokok yang mendasari materi ini.',
+                            'Latih pemecahan studi kasus dan latihan soal mandiri secara konsisten.',
+                            'Tanyakan kepada guru pengampu jika menemukan konsep yang belum dipahami sepenuhnya.',
+                          ]
+                      ).map((point, pIdx) => (
+                        <div
+                          key={pIdx}
+                          className="p-4 rounded-2xl bg-white border border-slate-200/90 shadow-2xs flex items-start gap-3.5 hover:border-emerald-600/40 transition-all"
+                        >
+                          <div className="w-7 h-7 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">
+                            {pIdx + 1}
+                          </div>
+                          <div className="text-xs sm:text-sm font-medium text-slate-800 leading-relaxed">
+                            {point}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {readerTab === 'ringkasan' && (
+                  <div className="max-w-3xl mx-auto space-y-5">
+                    <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-3">
+                      <h4 className="text-sm font-bold text-slate-900">Deskripsi Umum Modul:</h4>
+                      <p className="text-xs sm:text-sm text-slate-700 leading-relaxed">
+                        {selectedMaterial.description}
+                      </p>
+                    </div>
+
+                    <div className="p-5 rounded-2xl bg-emerald-50/60 border border-emerald-200/80 space-y-3">
+                      <h4 className="text-sm font-bold text-[#064E3B]">Struktur Pokok Bahasan Silabus:</h4>
+                      <div className="whitespace-pre-line text-xs sm:text-sm text-slate-800 leading-relaxed font-sans">
+                        {selectedMaterial.contentSummary}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Reader Modal Footer */}
+              <div className="p-4 sm:p-5 border-t border-slate-200 bg-slate-50/90 flex flex-col sm:flex-row items-center justify-between gap-3 shrink-0">
+                <div className="w-full sm:w-auto">
+                  {completedReads.includes(selectedMaterial.id) ? (
+                    <div className="flex items-center gap-2 text-xs font-bold text-emerald-800 bg-emerald-100/70 px-3.5 py-1.5 rounded-xl border border-emerald-300 shadow-2xs">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                      <span>Alhamdulillah, materi ini sudah Anda selesaikan!</span>
+                    </div>
+                  ) : (
+                    <div className="text-xs text-slate-600 flex items-center gap-1.5 font-medium">
+                      <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+                      <span>Materi interaktif dapat dibaca langsung tanpa perlu mengunduh file.</span>
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex items-center gap-2.5 w-full sm:w-auto justify-end">
+                  {/* Mark as Finished button */}
+                  <button
+                    type="button"
+                    onClick={() => toggleCompleteRead(selectedMaterial.id)}
+                    className={`flex-1 sm:flex-none px-4 py-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-2 cursor-pointer transition-all ${
+                      completedReads.includes(selectedMaterial.id)
+                        ? 'bg-slate-200 text-slate-700 hover:bg-slate-300'
+                        : 'bg-[#065F46] hover:bg-[#044E39] text-white shadow-xs'
+                    }`}
+                  >
+                    <CheckCircle2 className="w-4 h-4" />
+                    <span>
+                      {completedReads.includes(selectedMaterial.id)
+                        ? 'Tandai Belum Selesai'
+                        : 'Tandai Selesai Membaca'}
+                    </span>
+                  </button>
+
+                  {/* Tombol Unduh File: Hanya untuk Guru/Admin, TIDAK muncul untuk siswa */}
+                  {canManage && (
+                    <button
+                      type="button"
+                      onClick={() => handleDownloadMaterial(selectedMaterial)}
+                      className="px-3.5 py-2.5 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 text-xs font-semibold flex items-center gap-1.5 cursor-pointer"
+                      title="Unduh Salinan Dokumen (Khusus Pengajar/Admin)"
+                    >
+                      <Download className="w-3.5 h-3.5" />
+                      <span className="hidden sm:inline">Unduh Arsip File</span>
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
           </div>
